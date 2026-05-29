@@ -1,10 +1,10 @@
 .PHONY: build run tidy install clean
 
 build:
-	go build -o bin/paint main/main.go
+	go build -o bin/paint cmd/main.go
 
 run:
-	go run main/main.go
+	go run cmd/main.go
 
 tidy:
 	go mod tidy
