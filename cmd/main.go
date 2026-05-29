@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "image/png"
 	"log"
 
 	"github.com/charlesNkdl/go_paint_by_number/internal"

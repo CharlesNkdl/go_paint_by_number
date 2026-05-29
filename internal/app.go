@@ -8,7 +8,9 @@ import (
 	"syscall"
 
 	"github.com/charlesNkdl/go_paint_by_number/internal/config"
+	img "github.com/charlesNkdl/go_paint_by_number/internal/image_processing"
 	"github.com/charlesNkdl/go_paint_by_number/internal/server"
+	"github.com/charlesNkdl/go_paint_by_number/internal/utils"
 )
 
 type App struct {
@@ -43,6 +45,12 @@ func Run() error {
 	return nil
 }
 
-func (a *App) LogicTesting() {
-	
+func (a *App) LogicTesting() error {
+	handler := img.ImageHandler{}
+	imgOpened, err := handler.Open(a.config.ImagePath)
+	if err != nil {
+		return err
+	}
+	utils.PrintTypeAndKind(imgOpened)
+	return nil
 }
