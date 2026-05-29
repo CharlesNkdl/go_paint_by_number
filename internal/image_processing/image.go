@@ -2,6 +2,7 @@ package image_processing
 
 import (
 	"image"
+	"image/color"
 	"image/draw"
 	"os"
 	"reflect"
@@ -29,6 +30,7 @@ func (i ImageHandler) Resize(img *image.NRGBA, dst Dimension) *image.NRGBA {
 	if reflect.DeepEqual(src, dst) {
 		return i.Clone(img)
 	}
+	return i.Clone(img)
 }
 
 func (i ImageHandler) Clone(img *image.NRGBA) *image.NRGBA {
@@ -37,4 +39,21 @@ func (i ImageHandler) Clone(img *image.NRGBA) *image.NRGBA {
 	draw.Draw(dst, bounds, img, bounds.Min, draw.Src)
 	return dst
 	//utils.ParallelTreatment()
+}
+
+func (i ImageHandler) ExtractPixels(img image.Image) []color.RGBA {
+	bounds := img.Bounds()
+	pixels := make([]color.RGBA, 0, bounds.Dx()*bounds.Dy())
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			r, g, b, a := img.At(x, y).RGBA()
+			pixels = append(pixels, color.RGBA{
+				R: uint8(r >> 8),
+				G: uint8(g >> 8),
+				B: uint8(b >> 8),
+				A: uint8(a >> 8),
+			})
+		}
+	}
+	return pixels
 }

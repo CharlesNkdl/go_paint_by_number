@@ -1,0 +1,4 @@
+github.com/anthonynsimon/bild v0.15.0 h1:FzvaNLuNlAPKw1Xz7V2WYOcGIEBMj8Y6ZyAk7CI+HzA=
+github.com/anthonynsimon/bild v0.15.0/go.mod h1:qIgJ9FldkCn0iy5Ad24fzUkz5R+iJ0WfhiV+6FeCB5A=
+golang.org/x/image v0.38.0 h1:5l+q+Y9JDC7mBOMjo4/aPhMDcxEptsX+Tt3GgRQRPuE=
+golang.org/x/image v0.38.0/go.mod h1:/3f6vaXC+6CEanU4KJxbcUZyEePbyKbaLoDOe4ehFYY=

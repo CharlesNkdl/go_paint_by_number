@@ -7,8 +7,11 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/anthonynsimon/bild/imgio"
+	"github.com/anthonynsimon/bild/transform"
+	"github.com/charlesNkdl/go_paint_by_number/internal/calculation"
 	"github.com/charlesNkdl/go_paint_by_number/internal/config"
-	img "github.com/charlesNkdl/go_paint_by_number/internal/image_processing"
+	"github.com/charlesNkdl/go_paint_by_number/internal/image_processing"
 	"github.com/charlesNkdl/go_paint_by_number/internal/server"
 	"github.com/charlesNkdl/go_paint_by_number/internal/utils"
 )
@@ -46,11 +49,23 @@ func Run() error {
 }
 
 func (a *App) LogicTesting() error {
-	handler := img.ImageHandler{}
-	imgOpened, err := handler.Open(a.config.ImagePath)
+	imgHandler := image_processing.ImageHandler{}
+	imgOpened, err := imgio.Open(a.config.ImagePath)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
+	resized := transform.Resize(imgOpened, 1600, 900, transform.Linear)
 	utils.PrintTypeAndKind(imgOpened)
+	pixels := imgHandler.ExtractPixels(resized)
+	// change to flag
+	numberOfColors, limitIter := 16, 50
+	km := calculation.NewKMeans(numberOfColors, limitIter)
+	km.Fit(pixels)
+	//quantized := km.Quantize(resized)
+	if err := imgio.Save("output.png", resized, imgio.PNGEncoder()); err != nil {
+		fmt.Println(err)
+		return err
+	}
 	return nil
 }
