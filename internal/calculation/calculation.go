@@ -1,6 +1,9 @@
 package calculation
 
-import "image/color"
+import (
+	"image/color"
+	"math/rand"
+)
 
 type Helper struct{}
 
@@ -9,4 +12,16 @@ func (h Helper) DistanceSq(a, b color.RGBA) float64 {
 	dg := float64(a.G) - float64(b.G)
 	db := float64(a.B) - float64(b.B)
 	return dr*dr + dg*dg + db*db
+}
+
+func (h Helper) Subsample(pixels []color.RGBA, ratio float64) []color.RGBA {
+	n := int(float64(len(pixels)) * ratio)
+	if n < 1 {
+		n = 1
+	}
+	sample := make([]color.RGBA, n)
+	for i := range sample {
+		sample[i] = pixels[rand.Intn(len(pixels))]
+	}
+	return sample
 }
