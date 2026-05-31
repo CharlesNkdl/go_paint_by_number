@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/anthonynsimon/bild/blur"
 	"github.com/anthonynsimon/bild/imgio"
 	"github.com/anthonynsimon/bild/transform"
 	"github.com/charlesNkdl/go_paint_by_number/internal/calculation"
@@ -57,15 +58,29 @@ func (a *App) LogicTesting() error {
 	}
 	resized := transform.Resize(imgOpened, 1600, 900, transform.Linear)
 	utils.PrintTypeAndKind(imgOpened)
-	pixels := imgHandler.ExtractPixels(resized)
+	blurred := blur.Gaussian(resized, 2.0)
+
+	pixels := imgHandler.ExtractPixels(blurred)
+
 	// change to flag
-	numberOfColors, limitIter := 16, 50
+	numberOfColors, limitIter := 15, 50
 	km := calculation.NewKMeans(numberOfColors, limitIter)
 	km.Fit(pixels)
-	//quantized := km.Quantize(resized)
-	if err := imgio.Save("output.png", resized, imgio.PNGEncoder()); err != nil {
+	quantized := km.Quantize(blurred)
+	if err := imgio.Save("output.png", quantized, imgio.PNGEncoder()); err != nil {
 		fmt.Println(err)
 		return err
 	}
+	fmt.Println("The output is dooooone")
+	closed := calculation.MorphClose(quantized, 3)
+	if err := imgio.Save("output_morphed.png", closed, imgio.PNGEncoder()); err != nil {
+		return fmt.Errorf("save contours: %w", err)
+	}
+	contour := calculation.NewContour(closed)
+	contourImg := contour.Render(closed)
+	if err := imgio.Save("output_contours.png", contourImg, imgio.PNGEncoder()); err != nil {
+		return fmt.Errorf("save contours: %w", err)
+	}
+	fmt.Println("the countoring is done")
 	return nil
 }
