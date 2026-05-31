@@ -72,8 +72,12 @@ func (a *App) LogicTesting() error {
 		return err
 	}
 	fmt.Println("The output is dooooone")
-	contour := calculation.NewContour(quantized)
-	contourImg := contour.Render(quantized)
+	closed := calculation.MorphClose(quantized, 3)
+	if err := imgio.Save("output_morphed.png", closed, imgio.PNGEncoder()); err != nil {
+		return fmt.Errorf("save contours: %w", err)
+	}
+	contour := calculation.NewContour(closed)
+	contourImg := contour.Render(closed)
 	if err := imgio.Save("output_contours.png", contourImg, imgio.PNGEncoder()); err != nil {
 		return fmt.Errorf("save contours: %w", err)
 	}
