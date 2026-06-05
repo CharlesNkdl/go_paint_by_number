@@ -150,3 +150,39 @@ func (km *KMeans) Quantize(img image.Image) image.Image {
 	}
 	return out
 }
+
+func (km *KMeans) Palette() []CentroidPalette {
+	palette := make([]CentroidPalette, len(km.Centroids))
+	for i, c := range km.Centroids {
+		palette[i] = CentroidPalette{Index: i + 1, Color: c}
+	}
+	return palette
+}
+
+func (km *KMeans) IndexMap(img image.Image) [][]int {
+	bounds := img.Bounds()
+	indexMap := make([][]int, bounds.Dy())
+	for i := range indexMap {
+		indexMap[i] = make([]int, bounds.Dx())
+	}
+
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			r, g, b, a := img.At(x, y).RGBA()
+			p := color.RGBA{
+				R: uint8(r >> 8), G: uint8(g >> 8),
+				B: uint8(b >> 8), A: uint8(a >> 8),
+			}
+			minDist := math.MaxFloat64
+			nearest := 0
+			for i, c := range km.Centroids {
+				if d := km.H.DistanceSq(p, c); d < minDist {
+					minDist = d
+					nearest = i
+				}
+			}
+			indexMap[y-bounds.Min.Y][x-bounds.Min.X] = nearest + 1
+		}
+	}
+	return indexMap
+}
