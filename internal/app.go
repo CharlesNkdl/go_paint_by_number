@@ -82,5 +82,17 @@ func (a *App) LogicTesting() error {
 		return fmt.Errorf("save contours: %w", err)
 	}
 	fmt.Println("the countoring is done")
+
+	indexMap := km.IndexMap(closed)
+	labelingHelper := new(calculation.LabelingHelper)
+
+	regions := calculation.FindAllRegions(indexMap, 100)
+	labeled := labelingHelper.Render(contourImg, regions)
+
+	if err := imgio.Save("output_labeled.png", labeled, imgio.PNGEncoder()); err != nil {
+		return fmt.Errorf("save contours: %w", err)
+	}
+	fmt.Println("the labeling is done")
+
 	return nil
 }
